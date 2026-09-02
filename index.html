@@ -8,6 +8,11 @@
     <link rel="stylesheet" href="style.css" />
   </head>
   <body>
+    <!-- AUDIO: Clock ticking sound effect -->
+    <audio id="tickSound" preload="auto">
+      <source src="clock ticking sound effect.mp3" type="audio/mpeg">
+    </audio>
+
     <div class="doom-card">
       <!-- HEADER -->
       <div class="header">
@@ -46,6 +51,87 @@
       <!-- FOOTER -->
     </div>
 
-    <script src="script.js"></script>
+    <script>
+      // -------- COUNTDOWN LOGIC (target: Nov 11, 2026 00:00:00) --------
+      (function() {
+        const targetDate = new Date('2026-11-11T00:00:00').getTime();
+
+        const monthsEl = document.getElementById('months');
+        const daysEl   = document.getElementById('days');
+        const hoursEl  = document.getElementById('hours');
+        const minutesEl= document.getElementById('minutes');
+        const secondsEl= document.getElementById('seconds');
+
+        // Audio element
+        const tickSound = document.getElementById('tickSound');
+
+        // Play tick sound with low volume
+        function playTick() {
+          tickSound.currentTime = 0;
+          tickSound.volume = 0.2; // subtle volume
+          tickSound.play().catch(e => {
+            // silently fail if not allowed
+          });
+        }
+
+        // Try to play on first user interaction to unlock audio
+        let audioUnlocked = false;
+        document.addEventListener('click', function unlockAudio() {
+          if (!audioUnlocked) {
+            playTick();
+            audioUnlocked = true;
+          }
+        });
+
+        function pad(n) {
+          return String(n).padStart(2, '0');
+        }
+
+        let previousSeconds = -1;
+
+        function updateCountdown() {
+          const now = Date.now();
+          let diff = targetDate - now;
+
+          if (diff <= 0) {
+            // Countdown finished
+            monthsEl.textContent = '00';
+            daysEl.textContent   = '00';
+            hoursEl.textContent  = '00';
+            minutesEl.textContent= '00';
+            secondsEl.textContent= '00';
+            return;
+          }
+
+          // Calculate months (approximate: 30.44 days per month)
+          const seconds = Math.floor(diff / 1000);
+          const minutes = Math.floor(seconds / 60);
+          const hours   = Math.floor(minutes / 60);
+          const days    = Math.floor(hours / 24);
+          const months  = Math.floor(days / 30.44);
+
+          const remDays   = Math.floor(days % 30.44);
+          const remHours  = hours % 24;
+          const remMinutes= minutes % 60;
+          const remSeconds= seconds % 60;
+
+          monthsEl.textContent = pad(months);
+          daysEl.textContent   = pad(remDays);
+          hoursEl.textContent  = pad(remHours);
+          minutesEl.textContent= pad(remMinutes);
+          secondsEl.textContent= pad(remSeconds);
+
+          // Play tick sound only when seconds change (once per second)
+          if (remSeconds !== previousSeconds) {
+            playTick();
+            previousSeconds = remSeconds;
+          }
+        }
+
+        // Update immediately then every second
+        updateCountdown();
+        setInterval(updateCountdown, 1000);
+      })();
+    </script>
   </body>
 </html>
