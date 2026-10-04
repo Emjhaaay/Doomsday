@@ -6,133 +6,70 @@
     font-family: 'Segoe UI', 'Barlow Condensed', 'Arial Narrow', sans-serif;
 }
 
+html,
 body {
     min-height: 100vh;
+    background: #000000;
+    overflow: hidden;
+}
+
+body {
     display: flex;
     justify-content: center;
     align-items: center;
-    background: #0b0d15;
     padding: 1.5rem;
 }
 
 /* ---------- MAIN CARD ---------- */
-.doomsday-card {
+.doom-card {
     max-width: 950px;
     width: 100%;
-    background: rgba(8, 10, 20, 0.7);
-    backdrop-filter: blur(8px);
-    -webkit-backdrop-filter: blur(8px);
-    border: 1px solid rgba(8, 191, 124, 0.2);
-    border-radius: 4rem 2rem 4rem 2rem;
-    box-shadow: 0 30px 60px rgba(0, 0, 0, 0.8);
+    background: #000000;
     padding: 2.8rem 2rem 3.2rem;
     position: relative;
-    overflow: hidden;
 }
 
-/* subtle glowing runes (doom vibe) */
-.doomsday-card::before {
+/* Scanline overlay */
+.doom-card::after {
     content: '';
     position: absolute;
-    top: -40%;
-    left: -20%;
-    width: 160%;
-    height: 180%;
-    background: radial-gradient(circle at 30% 40%, rgba(8, 191, 124, 0.04) 0%, transparent 60%);
+    inset: 0;
+    background: repeating-linear-gradient(
+        to bottom,
+        transparent 0px,
+        transparent 2px,
+        rgba(255, 255, 255, 0.02) 3px,
+        transparent 4px
+    );
     pointer-events: none;
-    z-index: 0;
+    z-index: 5;
+    animation: scanline 8s linear infinite;
 }
 
-.doomsday-card::after {
-    content: '';
-    position: absolute;
-    bottom: 0;
-    right: 0;
-    width: 100%;
-    height: 4px;
-    background: linear-gradient(90deg, transparent, #08BF7C, #00643D, transparent);
-    opacity: 0.6;
-    z-index: 1;
+@keyframes scanline {
+    0% { transform: translateY(0); }
+    100% { transform: translateY(10px); }
 }
 
-/* ---------- HEADER ---------- */
-.header {
+/* ---------- COUNTDOWN DISPLAY ---------- */
+.countdown-display {
     display: flex;
-    align-items: center;
     justify-content: center;
-    gap: 1.2rem;
-    margin-bottom: 0.2rem;
-    position: relative;
-    z-index: 2;
-}
-
-.avengers-icon {
-    font-size: 2.4rem;
-    color: #08BF7C;
-    text-shadow: 0 0 20px #08BF7C, 0 0 40px #00643D;
-    animation: pulse-glow 2.4s infinite alternate;
-}
-
-@keyframes pulse-glow {
-    0% { text-shadow: 0 0 10px #08BF7C, 0 0 20px #00643D; }
-    100% { text-shadow: 0 0 30px #08BF7C, 0 0 60px #00643D, 0 0 90px #08BF7C; }
-}
-
-.header h1 {
-    font-size: 2.6rem;
-    font-weight: 700;
-    letter-spacing: 6px;
-    text-transform: uppercase;
-    color: #08BF7C;
-    text-shadow: 0 0 30px rgba(8, 191, 124, 0.3);
-    position: relative;
-    z-index: 2;
-}
-
-.subtitle {
-    text-align: center;
-    font-size: 1.1rem;
-    letter-spacing: 6px;
-    color: #08BF7C;
-    text-transform: uppercase;
-    margin-bottom: 2.2rem;
-    border-bottom: 1px solid rgba(8, 191, 124, 0.15);
-    padding-bottom: 0.7rem;
-    position: relative;
-    z-index: 2;
-    font-weight: 300;
-}
-
-/* ---------- COUNTDOWN GRID ---------- */
-.countdown-grid {
-    display: flex;
-    justify-content: space-around;
+    align-items: center;
     flex-wrap: wrap;
-    gap: 1.2rem 0.8rem;
+    gap: 0.5rem;
     position: relative;
     z-index: 2;
 }
 
-.time-unit {
+.time-block {
     display: flex;
     flex-direction: column;
     align-items: center;
-    background: rgba(12, 15, 30, 0.6);
-    backdrop-filter: blur(4px);
-    -webkit-backdrop-filter: blur(4px);
     padding: 0.9rem 0.6rem 0.6rem;
     min-width: 80px;
-    border-radius: 2rem 0.8rem 2rem 0.8rem;
-    border: 1px solid rgba(8, 191, 124, 0.12);
-    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.6);
-    transition: 0.25s ease;
     flex: 1 1 70px;
-}
-
-.time-unit:hover {
-    border-color: rgba(8, 191, 124, 0.4);
-    box-shadow: 0 0 30px rgba(8, 191, 124, 0.2);
-    transform: translateY(-4px);
+    position: relative;
 }
 
 .number {
@@ -140,107 +77,163 @@ body {
     font-weight: 700;
     line-height: 1;
     color: #ffffff;
-    text-shadow: 0 0 20px rgba(255, 255, 255, 0.3);
     letter-spacing: 2px;
     font-variant-numeric: tabular-nums;
-    transition: 0.15s;
+    position: relative;
+    display: inline-block;
+}
+
+/* ---------- GLITCH EFFECT ---------- */
+.number.glitch {
+    animation: glitch-skew 0.3s infinite;
+}
+
+.number.glitch::before,
+.number.glitch::after {
+    content: attr(data-text);
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    overflow: hidden;
+    pointer-events: none;
+}
+
+.number.glitch::before {
+    color: #00fff0;
+    z-index: -1;
+    animation: glitch-1 0.4s infinite linear alternate-reverse;
+    clip-path: polygon(0 0, 100% 0, 100% 45%, 0 45%);
+}
+
+.number.glitch::after {
+    color: #ff00c8;
+    z-index: -2;
+    animation: glitch-2 0.4s infinite linear alternate-reverse;
+    clip-path: polygon(0 55%, 100% 55%, 100% 100%, 0 100%);
+}
+
+@keyframes glitch-1 {
+    0%   { transform: translate(0, 0); }
+    20%  { transform: translate(-3px, -2px); }
+    40%  { transform: translate(-2px, 2px); }
+    60%  { transform: translate(2px, -1px); }
+    80%  { transform: translate(3px, 1px); }
+    100% { transform: translate(0, 0); }
+}
+
+@keyframes glitch-2 {
+    0%   { transform: translate(0, 0); }
+    20%  { transform: translate(3px, 2px); }
+    40%  { transform: translate(2px, -2px); }
+    60%  { transform: translate(-2px, 1px); }
+    80%  { transform: translate(-3px, -1px); }
+    100% { transform: translate(0, 0); }
+}
+
+@keyframes glitch-skew {
+    0%   { transform: skew(0deg); }
+    20%  { transform: skew(-0.5deg); }
+    40%  { transform: skew(0.5deg); }
+    60%  { transform: skew(-0.3deg); }
+    80%  { transform: skew(0.3deg); }
+    100% { transform: skew(0deg); }
+}
+
+/* Random full-number glitch flash */
+.number.glitch-flash {
+    animation: glitch-flash 0.2s steps(2, end);
+}
+
+@keyframes glitch-flash {
+    0%   { transform: translate(0); text-shadow: none; }
+    25%  { transform: translate(-4px, 2px); text-shadow: 3px 0 #00fff0, -3px 0 #ff00c8; }
+    50%  { transform: translate(4px, -2px); text-shadow: -3px 0 #00fff0, 3px 0 #ff00c8; }
+    75%  { transform: translate(-2px, 0); text-shadow: 2px 0 #00fff0, -2px 0 #ff00c8; }
+    100% { transform: translate(0); text-shadow: none; }
 }
 
 .label {
     font-size: 0.7rem;
     letter-spacing: 3px;
-    color: #08BF7C;
+    color: #ffffff;
     text-transform: uppercase;
     margin-top: 0.4rem;
-    border-top: 1px solid rgba(8, 191, 124, 0.15);
     padding-top: 0.5rem;
     width: 100%;
     text-align: center;
     font-weight: 500;
 }
 
-/* ---------- FOOTER ---------- */
-.footer {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: 1.6rem;
-    margin-top: 2.6rem;
-    position: relative;
-    z-index: 2;
+.label.glitch-label {
+    animation: glitch-label 0.15s steps(2, end);
 }
 
-.doom-symbol {
-    color: #00643D;
-    font-size: 1.4rem;
+@keyframes glitch-label {
+    0%   { transform: translate(0); opacity: 1; }
+    50%  { transform: translate(-2px, 1px); opacity: 0.6; }
+    100% { transform: translate(0); opacity: 1; }
+}
+
+.separator {
+    font-size: 2.5rem;
+    color: #ffffff;
+    font-weight: 700;
     opacity: 0.6;
-    text-shadow: 0 0 15px #08BF7C;
+    padding-bottom: 1.5rem;
 }
 
-.doom-quote {
-    color: #08BF7C;
-    font-size: 1rem;
-    letter-spacing: 3px;
-    font-style: italic;
-    text-transform: uppercase;
-    font-weight: 300;
-    border-left: 1px solid rgba(8, 191, 124, 0.15);
-    border-right: 1px solid rgba(8, 191, 124, 0.15);
-    padding: 0 1.2rem;
+.separator.glitch-sep {
+    animation: glitch-flash 0.2s steps(2, end);
+}
+
+/* Occasional screen-wide glitch */
+.doom-card.glitch-screen {
+    animation: glitch-screen 0.15s steps(3, end);
+}
+
+@keyframes glitch-screen {
+    0%   { transform: translate(0); filter: none; }
+    33%  { transform: translate(-3px, 0); filter: hue-rotate(90deg); }
+    66%  { transform: translate(3px, 0); filter: hue-rotate(-90deg); }
+    100% { transform: translate(0); filter: none; }
 }
 
 /* ---------- RESPONSIVE ---------- */
 @media (max-width: 700px) {
-    .doomsday-card {
+    .doom-card {
         padding: 2rem 1rem 2.2rem;
-        border-radius: 2.5rem 1.2rem 2.5rem 1.2rem;
-    }
-
-    .header h1 {
-        font-size: 1.8rem;
-        letter-spacing: 3px;
-    }
-
-    .avengers-icon {
-        font-size: 1.8rem;
     }
 
     .number {
         font-size: 2.8rem;
     }
 
-    .time-unit {
+    .time-block {
         min-width: 60px;
         padding: 0.6rem 0.3rem;
         flex: 1 0 60px;
     }
 
-    .subtitle {
-        font-size: 0.85rem;
-        letter-spacing: 3px;
-    }
-
-    .doom-quote {
-        font-size: 0.75rem;
-        letter-spacing: 2px;
-        padding: 0 0.6rem;
+    .separator {
+        font-size: 1.8rem;
     }
 }
 
 @media (max-width: 480px) {
-    .countdown-grid {
-        gap: 0.5rem;
+    .countdown-display {
+        gap: 0.3rem;
     }
 
     .number {
         font-size: 2rem;
     }
 
-    .time-unit {
+    .time-block {
         min-width: 50px;
         flex: 1 0 45px;
         padding: 0.4rem 0.1rem;
-        border-radius: 1.2rem 0.5rem;
     }
 
     .label {
@@ -248,12 +241,8 @@ body {
         letter-spacing: 1px;
     }
 
-    .header h1 {
-        font-size: 1.3rem;
-        letter-spacing: 2px;
-    }
-
-    .avengers-icon {
-        font-size: 1.2rem;
+    .separator {
+        font-size: 1.4rem;
+        padding-bottom: 1rem;
     }
 }
